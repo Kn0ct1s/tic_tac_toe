@@ -17,9 +17,6 @@ class TicBoard {
         TicBoard() = default;
 
         // forward declarations
-        char& operator()(int row, int col);
-        void operator()(int row, int col, char player);
-
         void place_piece(Player player);
         bool game_won(Player x, Player o);
 
@@ -36,25 +33,6 @@ class TicBoard {
 
 };
 
-char& TicBoard::operator()(int row, int col) {
-    return m_board[row][col];
-}
-
-void TicBoard::operator()(int row, int col, char player) {
-    m_board[row][col] = player;
-}
-
-// REFACTOR
-std::ostream& operator<<(std::ostream& out, const TicBoard& board) {
-    for (auto& row : board.m_board) {
-        for (auto& column : row) {
-            out << column << '\t';
-        }
-        out << '\n';
-    }
-    return out;
-}
-
 void TicBoard::place_piece(Player player) {
     // for holding spot to place piece
     int x{};
@@ -68,7 +46,7 @@ void TicBoard::place_piece(Player player) {
         if (x <= 0 || x >= 4 || y <= 0 || y >= 4) {
             std::cout << "invalid range, please enter number between 1 & 3\n\n";
             continue;
-        } else if (m_board[--x][--y] != '.') {
+        } else if (m_board[x - 1][y - 1] != '.') {
             std::cout << "invalid position, try again\n\n";
             continue;
         } else {
@@ -79,9 +57,34 @@ void TicBoard::place_piece(Player player) {
 }
 
 bool TicBoard::game_won(Player x, Player o) {
+    int b_size{ 3 };
+
+    for (int row{ 0 }; row < b_size; ++row) {
+        for (int col{ 0 }; col < b_size; ++col) {
+            if (row == 1 && m_board[row][col] != '.') {
+                if (m_board[row - 1][col] == m_board[row][col] &&
+                    m_board[row + 1][col] == m_board[row][col]) {
+                        return true;
+                    }
+            }
+        }
+    }
+
     return false;
 }
 
+std::ostream& operator<<(std::ostream& out, const TicBoard& board) {
+    out << '\n';
+    for (auto& row : board.m_board) {
+        out << "---------------------\n";
+        for (auto& column : row) {
+            out << "| " << column << " |" << '\t';
+        }
+        out << '\n';
+    }
+    out << "---------------------\n";
+    return out;
+}
 
 int main() {
     TicBoard board{};
@@ -93,17 +96,26 @@ int main() {
 
     board.in_game = true;
 
-    std::cout << "Tic Tac Toe\n";
+    while (true) {
+        std::cout << "Tic Tac Toe\n";
 
-    while (board.in_game) {
-        std::cout << "\n";
+        while (board.in_game) {
 
-        std::cout << board;
-        board.place_piece(x);
+            std::cout << board;
+            board.place_piece(x);
 
-        std::cout << board;
-        board.place_piece(o);
+            
 
-        break;
+            std::cout << board;
+            board.place_piece(o);
+
+            std::cout << board;
+
+            if (board.game_won(x, o)) {
+                std::cout << "WON";
+                break;
+            }
+        }
+    break;
     }
 }
