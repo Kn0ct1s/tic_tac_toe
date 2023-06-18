@@ -1,6 +1,11 @@
 #include <iostream>
 #include <limits>
 
+struct Player {
+    char piece{};
+    int points{};
+};
+
 class TicBoard {
     private:
         char m_board[3][3]{};
@@ -14,6 +19,9 @@ class TicBoard {
         // forward declarations
         char& operator()(int row, int col);
         void operator()(int row, int col, char player);
+
+        void place_piece(Player player);
+        bool game_won(Player x, Player o);
 
         // friend functions
         friend std::ostream& operator<<(std::ostream& out, const TicBoard& board);
@@ -47,25 +55,39 @@ std::ostream& operator<<(std::ostream& out, const TicBoard& board) {
     return out;
 }
 
-void get_pos(int& x, int &y) {
-    std::cin >> x;
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), ',');
-    std::cin >> y;
+void TicBoard::place_piece(Player player) {
+    // for holding spot to place piece
+    int x{};
+    int y{};
+    while (true) {
+        std::cout << player.piece << " choose where to place peice (x, y): ";
+        std::cin >> x;
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), ',');
+        std::cin >> y;
 
-    if (x) {
-        --x;
-    } 
-    if (y) {
-        --y;
+        if (x <= 0 || x >= 4 || y <= 0 || y >= 4) {
+            std::cout << "invalid range, please enter number between 1 & 3\n\n";
+            continue;
+        } else if (m_board[--x][--y] != '.') {
+            std::cout << "invalid position, try again\n\n";
+            continue;
+        } else {
+            m_board[--x][--y] = player.piece;
+            break;
+        }
     }
+}
+
+bool TicBoard::game_won(Player x, Player o) {
+    return false;
 }
 
 
 int main() {
     TicBoard board{};
-
-    int x_score{0};
-    int y_score{0};
+    
+    Player x{'x', 0};
+    Player o{'o', 0};
 
     board.init_board();
 
@@ -73,23 +95,14 @@ int main() {
 
     std::cout << "Tic Tac Toe\n";
 
-    int x{};
-    int y{};
-
     while (board.in_game) {
         std::cout << "\n";
 
-        std::cout << "X choose a tile to place (x, y): ";        
-        get_pos(x, y);
-        board(x, y, 'X');
+        std::cout << board;
+        board.place_piece(x);
 
         std::cout << board;
-
-        std::cout << "O choose a tile to place (x, y): ";
-        get_pos(x, y);
-        board(x, y, 'O');
-
-        std::cout << board;
+        board.place_piece(o);
 
         break;
     }
