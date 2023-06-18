@@ -17,8 +17,8 @@ class TicBoard {
         TicBoard() = default;
 
         // forward declarations
-        void place_piece(Player player);
-        bool game_won(Player x, Player o);
+        void place_piece(const Player& player);
+        bool game_won(Player& player);
 
         // friend functions
         friend std::ostream& operator<<(std::ostream& out, const TicBoard& board);
@@ -33,7 +33,7 @@ class TicBoard {
 
 };
 
-void TicBoard::place_piece(Player player) {
+void TicBoard::place_piece(const Player& player) {
     // for holding spot to place piece
     int x{};
     int y{};
@@ -56,19 +56,39 @@ void TicBoard::place_piece(Player player) {
     }
 }
 
-bool TicBoard::game_won(Player x, Player o) {
-    int b_size{ 3 };
-
-    for (int row{ 0 }; row < b_size; ++row) {
-        for (int col{ 0 }; col < b_size; ++col) {
-            if (row == 1 && m_board[row][col] != '.') {
-                if (m_board[row - 1][col] == m_board[row][col] &&
-                    m_board[row + 1][col] == m_board[row][col]) {
-                        return true;
-                    }
-            }
+bool TicBoard::game_won(Player& player) {
+    // check horizontal
+    for (int row{ 0 }, col{ 1 }; row < 3; ++row) {
+        if (m_board[row][col] == player.piece && m_board[row][col - 1] == player.piece &&
+            m_board[row][col + 1] == player.piece) {
+                ++player.points;
+                return true;
         }
     }
+
+    // check vertical
+    for (int row { 1 }, col{ 0 }; col < 3; ++col) {
+        if (m_board[row][col] == player.piece && m_board[row - 1][col] == player.piece &&
+            m_board[row + 1][col] == player.piece) {
+                ++player.points;
+                return true;
+            }
+    }
+
+    // check diagonal
+    int row{ 1 };
+    int col{ 1 };
+    if (m_board[row][col] == player.piece &&
+        m_board[row - 1][col - 1] == player.piece &&
+        m_board[row + 1][col + 1] == player.piece) {
+            ++player.points;
+            return true;
+    } else if (m_board[row][col] == player.piece &&
+            m_board[row + 1][col - 1] == player.piece &&
+            m_board[row - 1][col + 1] == player.piece) {
+                ++player.points;
+                return true;
+            }
 
     return false;
 }
@@ -104,6 +124,11 @@ int main() {
             std::cout << board;
             board.place_piece(x);
 
+            if (board.game_won(x)) {
+                std::cout << "x won";
+                std::cout << board;
+                break;
+            }
             
 
             std::cout << board;
@@ -111,8 +136,9 @@ int main() {
 
             std::cout << board;
 
-            if (board.game_won(x, o)) {
-                std::cout << "WON";
+            if (board.game_won(o)) {
+                std::cout << "o won";
+                std::cout << board;
                 break;
             }
         }
