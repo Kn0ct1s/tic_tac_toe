@@ -1,4 +1,5 @@
 #include <iostream>
+#include <limits>
 
 #include "TicBoard.h"
 
@@ -44,9 +45,14 @@ int main() {
                     break;
                 }
                 case 'n':
-                    std::cout << "X Scored: " << x.points << '\n';
+                    std::cout << "\nX Scored: " << x.points << '\n';
                     std::cout << "O Scored: " << o.points << '\n';
                     exit(0);
+                default:
+                    std::cout << "Invalid input, try again\n\n";
+                    std::cin.clear();
+                    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                    continue;
             }
             break;
         }
