@@ -23,6 +23,8 @@ void TicBoard::place_piece(const Player& player) {
 
         if (x <= 0 || x >= 4 || y <= 0 || y >= 4) {
             std::cout << "invalid range, please enter number between 1 & 3\n\n";
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             continue;
         } else if (m_board[x - 1][y - 1] != '.') {
             std::cout << "invalid position, try again\n\n";
