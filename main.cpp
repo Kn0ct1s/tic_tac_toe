@@ -5,15 +5,15 @@
 int main() {
     TicBoard board{};
     
+    // both players
     Player x{'X', 0};
     Player o{'O', 0};
-
-    board.init_board();
 
     while (true) {
         std::cout << "\tTic Tac Toe\n\n";
         std::cout << "X points: " << x.points << "\t" << "O points: " << o.points;
 
+        // main game loop
         while (true) {
             std::cout << board;
 
@@ -32,6 +32,7 @@ int main() {
             }
         }
 
+        // check if they want to play again
         while (true) {
             std::cout << "Play again? (y/n): ";
             char ans{};
